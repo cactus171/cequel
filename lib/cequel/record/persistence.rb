@@ -308,8 +308,10 @@ module Cequel
 
       def read_attribute(attribute)
         result = super
-        if result.present? && column = self.class.reflect_on_column(attribute)
-          return result.in_time_zone if column.type.is_a?(Cequel::Type::Timestamp)
+        if column = self.class.reflect_on_column(attribute)
+          if column.type.is_a?(Cequel::Type::Timestamp)
+            return result.in_time_zone if result.respond_to?(:in_time_zone)
+          end
         end
 
         result
@@ -317,8 +319,10 @@ module Cequel
         load
 
         result = super
-        if result.present? && column = self.class.reflect_on_column(attribute)
-          return result.in_time_zone if column.type.is_a?(Cequel::Type::Timestamp)
+        if column = self.class.reflect_on_column(attribute)
+          if column.type.is_a?(Cequel::Type::Timestamp)
+            return result.in_time_zone if result.respond_to?(:in_time_zone)
+          end
         end
 
         result
