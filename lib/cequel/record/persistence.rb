@@ -307,19 +307,21 @@ module Cequel
       private :connection, :table
 
       def read_attribute(attribute)
-        if column = self.class.reflect_on_column(attribute)
-          return super.in_time_zone if column.type.is_a?(Cequel::Type::Timestamp)
+        result = super
+        if result.present? && column = self.class.reflect_on_column(attribute)
+          return result.in_time_zone if column.type.is_a?(Cequel::Type::Timestamp)
         end
 
-        super
+        result
       rescue MissingAttributeError
         load
 
-        if column = self.class.reflect_on_column(attribute)
-          return super.in_time_zone if column.type.is_a?(Cequel::Type::Timestamp)
+        result = super
+        if result.present? && column = self.class.reflect_on_column(attribute)
+          return result.in_time_zone if column.type.is_a?(Cequel::Type::Timestamp)
         end
-        
-        super
+
+        result
       end
 
       def write_attribute(name, value)
